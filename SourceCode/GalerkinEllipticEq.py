@@ -64,10 +64,11 @@ class GalerkinEllipticSolver:
         integral_val = self.domain.calculate_integral(scalar_product)
         return integral_val
 
-    def calculate_sol_row_vals(self, a_eq_part: np.array,
-                               b_eq_part: np.array,
+    def calculate_sol_row_vals(self,
+                               a_eq_part: np.ndarray,
+                               b_eq_part: np.ndarray,
                                row: int
-                               ):
+                               ) -> None:
         row_func = self.basic_funcs[row]
         for col, col_func in enumerate(self.basic_funcs):
             a_eq_part[row, col] = self.get_left_part_int(col_func, row_func)

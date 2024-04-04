@@ -20,7 +20,7 @@ def test_1d_func():
     obj.calculate_solution()
     print("time passed: {}".format(time.time() - start))
     approx_f = obj.get_solution()
-    # print(obj.solution)
+    print("coefficients: {}".format(obj.solution))
     n_points = 100
     dom_vals = domain.get_domain_values(n_points)
     exact_solution = lambda x: np.exp(x)

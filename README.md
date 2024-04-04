@@ -8,6 +8,23 @@ Currently, the implementation also supports only a simple rectangular domain.
 A non-stationary problem (for example, parabolic heat equation) also can be represented 
 as a stationary one by considering time variable as a space variable like x, y, z.
 
+For now the program does not conduct integration by parts. 
+It was skipped intentionally in order to make API more user-friendly (I don't want
+to force users to integrate by parts the left part of the equation, I guess none wants to 
+calculate derivatives by hand). Unfortunately, I did not find a way to conduct integration
+by parts automatically, but maybe I will fix it later.
+
+Galerkin method tries to find the coefficients $ a_{i} $ to make the approximate solution below as 
+optimal as possible
+
+$$ \tilde{u}(x) = u_{0}(x) + \sum_{i=1}^na_{i}\varphi_{i}(x) $$
+
+Here $ u_{0}(x) $ - a boundary function which was introduced to make the approximate solution to satisfy the
+boundary conditions, $ \varphi_{i}(x) $ - basis functions. 
+
+More about Bubnov-Galerking method you may find for example here https://encyclopediaofmath.org/wiki/Galerkin_method 
+and here https://en.wikipedia.org/wiki/Galerkin_method.
+
 ## How to use?
 
 First of all, make sure you have python3.8 or newer and all libraries from *requirements.txt*
@@ -36,6 +53,14 @@ $$ y'- y = 0 $$
 
 $$ y(0) = 1 $$
 
+The approximate solution would look like
+
+$$ \tilde{y} = 1 + \sum_{i=1}^{n}a_{i}x^{i} $$
+
+Exact solution:
+
+$$ y = exp(x) $$
+
 ```python
 from SourceCode import *
 import numpy as np
@@ -59,6 +84,11 @@ dom_vals = domain.get_domain_values(n_points)
 exact_sol = lambda x: np.exp(x)
 error = get_max_error(exact_sol, f_approx, dom_vals)
 print("max error {}".format(error))
+```
+the output:
+```
+coefficients: [0.99999019 0.50011279 0.1661158  0.04300012 0.00665808 0.00240431]
+error 5.440880910256851e-07
 ```
 second example
 
@@ -109,6 +139,10 @@ error = get_max_error(exact_solution, f_approx, *dom_vals)
 print("error {}".format(error))
 domain.plot_function(f_approx)
 ```
+the output:
+```
+error 0.0036022219668757835
+```
 
 As you can see you may also compare obtained solution with the exact solution if you have one.
 
@@ -145,7 +179,7 @@ right_eq_part = lambda x,y: x*y
 then it means that we have an equation $ u_{xy}=xy $.
 
 *GalerkinEllipticSolver* has several methods, but you need only two of them:
-* **calculate_solution(self)** - after init you should execute it to calcuate coefficients of the basis functions
+* **calculate_solution(self)** - after init you should execute it to calculate coefficients of the basis functions
 * **get_solution(self)** - get callable function as a linear comb of basis functions plus boundary function. Can be
 executed only after **calculate_solution(self)** is used
 
